@@ -1,4 +1,4 @@
-package client
+package circleci
 
 import "testing"
 
