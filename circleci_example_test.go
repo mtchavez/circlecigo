@@ -1,4 +1,4 @@
-package client
+package circleci
 
 import "fmt"
 
@@ -7,5 +7,5 @@ func ExampleNewClient() {
 	client := NewClient(token)
 	fmt.Printf("Client Created: %+s\n", client)
 	// Output:
-	// Client Created: {"token":"my-circle-token","host":"https://circleci.com","port":443,"version":"v1"}
+	// Client Created: {"base_url":"https://https:%2F%2Fcircleci.com/api/v1","token":"my-circle-token"}
 }
