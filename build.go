@@ -1,5 +1,6 @@
 package circleci
 
+// Build - CircleCI build response
 type Build struct {
 	VcsURL          string       `json:"vcs_url"`
 	BuildURL        string       `json:"build_url"`
@@ -25,6 +26,7 @@ type Build struct {
 	PreviousBuild   *BuildStatus `json:"previous_build"`
 }
 
+// BuildStatus - CircleCI status for a build response
 type BuildStatus struct {
 	BuildNum int    `json:"build_num"`
 	Status   string `json:"status"`

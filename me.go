@@ -1,5 +1,6 @@
 package circleci
 
+// Me - CircleCI me endpoint response to get account information
 type Me struct {
 	Admin             bool     `json:"admin"`
 	AllEmails         []string `json:"all_emails"`
@@ -14,7 +15,8 @@ type Me struct {
 	SelectedEmail     string   `json:"selected_email"`
 }
 
-func (client *Client) Me() (*Me, *ApiResponse) {
+// Me calls the /me CircleCI endpoint to get account information. Requires auth token.
+func (client *Client) Me() (*Me, *APIResponse) {
 	me := &Me{}
 	apiResp := client.request("GET", "me", nil, nil, me)
 	return me, apiResp
