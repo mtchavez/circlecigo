@@ -24,12 +24,16 @@ var (
 	defaultClient = &Client{BaseURL: defaultURL, Logger: defaultLogger, httpClient: http.DefaultClient}
 )
 
-type ApiResponse struct {
+// APIResponse - Wraps an API request and gets returned from API interactions
+// to access the raw response and status of the request.
+type APIResponse struct {
 	Response *http.Response
 	Error    error
 }
 
-func (resp *ApiResponse) Success() bool {
+// Success - Returns a boolean for determining if an APIResponse is successfull
+// Will return false for any non 2xx status codes.
+func (resp *APIResponse) Success() bool {
 	if resp.Error != nil {
 		return false
 	}
@@ -76,8 +80,8 @@ func (client *Client) String() string {
 	return string(jsonClient)
 }
 
-func (client *Client) request(method, urlString string, params url.Values, body interface{}, response interface{}) *ApiResponse {
-	apiResp := &ApiResponse{}
+func (client *Client) request(method, urlString string, params url.Values, body interface{}, response interface{}) *APIResponse {
+	apiResp := &APIResponse{}
 	if params == nil {
 		params = url.Values{}
 	}
@@ -85,8 +89,8 @@ func (client *Client) request(method, urlString string, params url.Values, body 
 		params.Set("circle-token", client.Token)
 	}
 	reqPath := &url.URL{Path: urlString, RawQuery: params.Encode()}
-	reqUrl := client.baseURL().ResolveReference(reqPath)
-	httpReq, reqErr := newClientRequest(method, reqUrl.String(), body)
+	reqURL := client.baseURL().ResolveReference(reqPath)
+	httpReq, reqErr := newClientRequest(method, reqURL.String(), body)
 	if reqErr != nil {
 		apiResp.Error = reqErr
 		return apiResp
