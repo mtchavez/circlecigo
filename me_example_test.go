@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func ExampleMe() {
+func ExampleClient_Me() {
 	token := os.Getenv("CIRCLE_TOKEN")
 	client := NewClient(token)
 	_, apiResp := client.Me()
@@ -17,7 +17,7 @@ Success = %v
 	// Success = true
 }
 
-func ExampleMe_Unauthorized() {
+func ExampleClient_Me_unauthorized() {
 	client := defaultClient
 	_, apiResp := client.Me()
 	fmt.Printf(`[Response]
