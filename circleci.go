@@ -31,7 +31,7 @@ type APIResponse struct {
 	Error    error
 }
 
-// Success - Returns a boolean for determining if an APIResponse is successfull
+// Success - Returns a boolean for determining if an APIResponse is successful
 // Will return false for any non 2xx status codes.
 func (resp *APIResponse) Success() bool {
 	if resp.Error != nil {
