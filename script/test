@@ -5,6 +5,7 @@
 set -e
 
 echo '[script/test] Running tests'
-go test -cover ./...
+PACKAGES=$(go list ./... | grep -v '/vendor/')
+go test -cover $PACKAGES
 
 # vim: ft=sh:
