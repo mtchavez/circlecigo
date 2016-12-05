@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Run tests
+#
+set -e
+
+echo '[script/test] Running tests'
+go test -cover ./...
+
+# vim: ft=sh:
