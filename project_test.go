@@ -6,11 +6,6 @@ import (
 	"testing"
 )
 
-var (
-	testUsername = "mtchavez"
-	testReponame = "circlecigo"
-)
-
 func TestClient_Follow_unauthorized(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()

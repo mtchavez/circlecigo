@@ -12,9 +12,12 @@ import (
 const TestToken = "abcd-1234-abcd-1234"
 
 var (
-	testMux    *http.ServeMux
-	testServer *httptest.Server
-	testClient *Client
+	testMux      *http.ServeMux
+	testServer   *httptest.Server
+	testClient   *Client
+	testUsername = "mtchavez"
+	testReponame = "circlecigo"
+	testBuildNum = 1
 )
 
 func init() {
