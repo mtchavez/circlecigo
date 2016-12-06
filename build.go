@@ -72,3 +72,11 @@ func (client *Client) GetBuild(username, project string, buildNum int) (*Build, 
 	apiResp := client.request("GET", path, nil, nil, build)
 	return build, apiResp
 }
+
+// RetryBuild calls the /project/:username/:reponame/:build_num/retry endpoint to retry a build
+func (client *Client) RetryBuild(username, project string, buildNum int) (*Build, *APIResponse) {
+	build := &Build{}
+	path := fmt.Sprintf("project/%s/%s/%d/retry", username, project, buildNum)
+	apiResp := client.request("GET", path, nil, nil, build)
+	return build, apiResp
+}
