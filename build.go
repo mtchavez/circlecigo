@@ -80,3 +80,11 @@ func (client *Client) RetryBuild(username, project string, buildNum int) (*Build
 	apiResp := client.request("GET", path, nil, nil, build)
 	return build, apiResp
 }
+
+// CancelBuild calls the /project/:username/:reponame/:build_num/cancel endpoint to cancel a build
+func (client *Client) CancelBuild(username, project string, buildNum int) (*Build, *APIResponse) {
+	build := &Build{}
+	path := fmt.Sprintf("project/%s/%s/%d/cancel", username, project, buildNum)
+	apiResp := client.request("GET", path, nil, nil, build)
+	return build, apiResp
+}

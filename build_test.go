@@ -108,3 +108,48 @@ func TestClient_RetryBuild(t *testing.T) {
 		t.Errorf("Expected build BuildNum to be %d but got %d", 1234, build.BuildNum)
 	}
 }
+
+func TestClient_CancelBuild_unauthorized(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/%d/cancel", testUsername, testReponame, testBuildNum)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, "GET")
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, `{"message": "You must log in first"}`)
+	})
+	build, apiResp := testClient.CancelBuild(testUsername, testReponame, testBuildNum)
+	if apiResp.Success() {
+		t.Errorf("Expected response to not be successful without token")
+	}
+	if apiResp.Response.StatusCode != http.StatusUnauthorized {
+		t.Errorf("Expected unauthorized code but got %v", apiResp.Response.StatusCode)
+	}
+	if build.Status != "" {
+		t.Errorf("Expected no status to be set")
+	}
+}
+
+func TestClient_CancelBuild(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/%d/cancel", testUsername, testReponame, testBuildNum)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, "GET")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"status": "cancelled", "build_num": 1234}`)
+	})
+	build, apiResp := testClient.CancelBuild(testUsername, testReponame, testBuildNum)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if build.Status != "cancelled" {
+		t.Errorf("Expected build Status to be %s but got %s", "cancelled", build.Status)
+	}
+	if build.BuildNum != 1234 {
+		t.Errorf("Expected build BuildNum to be %d but got %d", 1234, build.BuildNum)
+	}
+}
