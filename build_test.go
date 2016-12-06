@@ -153,3 +153,49 @@ func TestClient_CancelBuild(t *testing.T) {
 		t.Errorf("Expected build BuildNum to be %d but got %d", 1234, build.BuildNum)
 	}
 }
+
+func TestClient_BuildArtifacts_unauthorized(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/%d/artifacts", testUsername, testReponame, testBuildNum)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, "GET")
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, `{"message": "You must log in first"}`)
+	})
+	artifacts, apiResp := testClient.BuildArtifacts(testUsername, testReponame, testBuildNum)
+	if apiResp.Success() {
+		t.Errorf("Expected response to not be successful without token")
+	}
+	if apiResp.Response.StatusCode != http.StatusUnauthorized {
+		t.Errorf("Expected unauthorized code but got %v", apiResp.Response.StatusCode)
+	}
+	if len(artifacts) != 0 {
+		t.Errorf("Expected no artifacts to exist")
+	}
+}
+
+func TestClient_BuildArtifacts(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/%d/artifacts", testUsername, testReponame, testBuildNum)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, "GET")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `[{"node_index": 0, "url": "https://circleci.com/my-path-to-artifact"}]`)
+	})
+	artifacts, apiResp := testClient.BuildArtifacts(testUsername, testReponame, testBuildNum)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if len(artifacts) == 0 {
+		t.Errorf("Expected artifacts but didn't get any")
+	}
+	artifact := artifacts[0]
+	if artifact.URL == "" {
+		t.Errorf("Expected artifact URL to be set")
+	}
+}

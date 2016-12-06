@@ -65,6 +65,14 @@ type Action struct {
 	Failed             bool       `json:"failed"`
 }
 
+// Artifact is for a build that has exposed artifacts from the build process
+type Artifact struct {
+	NodeIndex  int    `json:"node_index"`
+	Path       string `json:"path"`
+	PrettyPath string `json:"pretty_path"`
+	URL        string `json:"url"`
+}
+
 // GetBuild calls the /project/:username/:reponame/:build_num endpoint to return a build
 func (client *Client) GetBuild(username, project string, buildNum int) (*Build, *APIResponse) {
 	build := &Build{}
@@ -87,4 +95,13 @@ func (client *Client) CancelBuild(username, project string, buildNum int) (*Buil
 	path := fmt.Sprintf("project/%s/%s/%d/cancel", username, project, buildNum)
 	apiResp := client.request("GET", path, nil, nil, build)
 	return build, apiResp
+}
+
+// BuildArtifacts calls the /project/:username/:reponame/:build_num/artifacts
+// endpoint to get all artifacts for a build
+func (client *Client) BuildArtifacts(username, project string, buildNum int) ([]*Artifact, *APIResponse) {
+	artifacts := []*Artifact{}
+	path := fmt.Sprintf("project/%s/%s/%d/artifacts", username, project, buildNum)
+	apiResp := client.request("GET", path, nil, nil, &artifacts)
+	return artifacts, apiResp
 }
