@@ -73,6 +73,16 @@ type Artifact struct {
 	URL        string `json:"url"`
 }
 
+// BuildTest is a test that was ran associated with a Build
+type BuildTest struct {
+	Message   string  `json:"message"`
+	File      string  `json:"file"`
+	RunTime   float64 `json:"run_time"`
+	Result    string  `json:"result"`
+	Name      string  `json:"name"`
+	Classname string  `json:"classname"`
+}
+
 // GetBuild calls the /project/:username/:reponame/:build_num endpoint to return a build
 func (client *Client) GetBuild(username, project string, buildNum int) (*Build, *APIResponse) {
 	build := &Build{}
@@ -104,4 +114,13 @@ func (client *Client) BuildArtifacts(username, project string, buildNum int) ([]
 	path := fmt.Sprintf("project/%s/%s/%d/artifacts", username, project, buildNum)
 	apiResp := client.request("GET", path, nil, nil, &artifacts)
 	return artifacts, apiResp
+}
+
+// BuildTests calls the /project/:username/:reponame/:build_num/tests
+// endpoint to get all tests for a build
+func (client *Client) BuildTests(username, project string, buildNum int) ([]*BuildTest, *APIResponse) {
+	tests := []*BuildTest{}
+	path := fmt.Sprintf("project/%s/%s/%d/tests", username, project, buildNum)
+	apiResp := client.request("GET", path, nil, nil, &tests)
+	return tests, apiResp
 }

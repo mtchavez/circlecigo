@@ -199,3 +199,59 @@ func TestClient_BuildArtifacts(t *testing.T) {
 		t.Errorf("Expected artifact URL to be set")
 	}
 }
+
+func TestClient_BuildTests_unauthorized(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/%d/tests", testUsername, testReponame, testBuildNum)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, "GET")
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, `{"message": "You must log in first"}`)
+	})
+	tests, apiResp := testClient.BuildTests(testUsername, testReponame, testBuildNum)
+	if apiResp.Success() {
+		t.Errorf("Expected response to not be successful without token")
+	}
+	if apiResp.Response.StatusCode != http.StatusUnauthorized {
+		t.Errorf("Expected unauthorized code but got %v", apiResp.Response.StatusCode)
+	}
+	if len(tests) != 0 {
+		t.Errorf("Expected no tests to exist")
+	}
+}
+
+func TestClient_BuildTests(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/%d/tests", testUsername, testReponame, testBuildNum)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, "GET")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `[{
+			"message": "",
+			"file": "spec/unit/user_spec.rb",
+			"source": "rspec",
+			"run_time": 0.240912,
+			"result": "success",
+			"name": "user creation",
+			"classname": "spec.unit.user_spec"}]`)
+	})
+	tests, apiResp := testClient.BuildTests(testUsername, testReponame, testBuildNum)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if len(tests) == 0 {
+		t.Errorf("Expected tests but didn't get any")
+	}
+	test := tests[0]
+	if test.Name != "user creation" {
+		t.Errorf("Expected name to be %s but got %s", "user creation", test.Name)
+	}
+	if test.RunTime != 0.240912 {
+		t.Errorf("Expected RunTime to be %f but got %f", 0.240912, test.RunTime)
+	}
+}
