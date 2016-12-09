@@ -1,6 +1,9 @@
 package circleci
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 // ProjectFollow - CircleCI API project follow response
 type ProjectFollow struct {
@@ -17,7 +20,7 @@ type ProjectClearCache struct {
 func (client *Client) Follow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
 	path := fmt.Sprintf("/project/%s/%s/follow", username, project)
-	apiResp := client.request("GET", path, nil, nil, follow)
+	apiResp := client.request(http.MethodGet, path, nil, nil, follow)
 	return follow, apiResp
 }
 
@@ -25,7 +28,7 @@ func (client *Client) Follow(username, project string) (*ProjectFollow, *APIResp
 func (client *Client) Unfollow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
 	path := fmt.Sprintf("/project/%s/%s/unfollow", username, project)
-	apiResp := client.request("GET", path, nil, nil, follow)
+	apiResp := client.request(http.MethodGet, path, nil, nil, follow)
 	return follow, apiResp
 }
 
@@ -33,6 +36,6 @@ func (client *Client) Unfollow(username, project string) (*ProjectFollow, *APIRe
 func (client *Client) ClearCache(username, project string) (*ProjectClearCache, *APIResponse) {
 	clearCache := &ProjectClearCache{}
 	path := fmt.Sprintf("/project/%s/%s/build-cache", username, project)
-	apiResp := client.request("DELETE", path, nil, nil, clearCache)
+	apiResp := client.request(http.MethodDelete, path, nil, nil, clearCache)
 	return clearCache, apiResp
 }

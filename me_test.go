@@ -10,7 +10,7 @@ func TestClient_Me_Unauthorized(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	testMux.HandleFunc("/me", func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -30,7 +30,7 @@ func TestClient_Me(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	testMux.HandleFunc("/me", func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"login": "mtchavez", "selected_email": "foo@bar.com"}`)
 	})

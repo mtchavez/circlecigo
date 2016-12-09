@@ -10,7 +10,7 @@ func TestClient_RecentBuilds__Unauthorized(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	testMux.HandleFunc("/recent-builds", func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -30,7 +30,7 @@ func TestClient_RecentBuilds(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	testMux.HandleFunc("/recent-builds", func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `[{"build_num": 12345, "branch": "master"}]`)
 	})

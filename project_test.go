@@ -11,7 +11,7 @@ func TestClient_Follow_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/follow", testUsername, testReponame)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -32,7 +32,7 @@ func TestClient_Follow(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/follow", testUsername, testReponame)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"followed": true, "first_build": 1234}`)
 	})
@@ -53,7 +53,7 @@ func TestClient_Unfollow_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/unfollow", testUsername, testReponame)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -71,7 +71,7 @@ func TestClient_Unfollow(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/unfollow", testUsername, testReponame)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"followed": false}`)
 	})
@@ -92,7 +92,7 @@ func TestClient_ClearCache_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/build-cache", testUsername, testReponame)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "DELETE")
+		checkMethod(t, r, http.MethodDelete)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -110,7 +110,7 @@ func TestClient_ClearCache(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/build-cache", testUsername, testReponame)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "DELETE")
+		checkMethod(t, r, http.MethodDelete)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status": "build cache deleted"}`)
 	})

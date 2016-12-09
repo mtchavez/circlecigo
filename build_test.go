@@ -11,7 +11,7 @@ func TestClient_GetBuild_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -32,7 +32,7 @@ func TestClient_GetBuild(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status": "running", "steps": [{"name": "make test", "actions": [{"name": "Running make test"}]}]}`)
 	})
@@ -69,7 +69,7 @@ func TestClient_RetryBuild_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/retry", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -90,7 +90,7 @@ func TestClient_RetryBuild(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/retry", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status": "running", "build_num": 1234}`)
 	})
@@ -114,7 +114,7 @@ func TestClient_CancelBuild_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/cancel", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -135,7 +135,7 @@ func TestClient_CancelBuild(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/cancel", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status": "cancelled", "build_num": 1234}`)
 	})
@@ -159,7 +159,7 @@ func TestClient_BuildArtifacts_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/artifacts", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -180,7 +180,7 @@ func TestClient_BuildArtifacts(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/artifacts", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `[{"node_index": 0, "url": "https://circleci.com/my-path-to-artifact"}]`)
 	})
@@ -205,7 +205,7 @@ func TestClient_BuildTests_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/tests", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -226,7 +226,7 @@ func TestClient_BuildTests(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/tests", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, "GET")
+		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `[{
 			"message": "",
