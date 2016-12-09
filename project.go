@@ -16,6 +16,12 @@ type ProjectClearCache struct {
 	Status string `json:"status"`
 }
 
+// EnvVar - CircleCI API ENV variable response
+type EnvVar struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 // Follow calls the /project/:username/:project/follow endpoint to follow a project
 func (client *Client) Follow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
@@ -38,4 +44,13 @@ func (client *Client) ClearCache(username, project string) (*ProjectClearCache, 
 	path := fmt.Sprintf("/project/%s/%s/build-cache", username, project)
 	apiResp := client.request(http.MethodDelete, path, nil, nil, clearCache)
 	return clearCache, apiResp
+}
+
+// EnvVars calls the /project/:username/:project/envvar endpoint to get
+// all ENV variables set for the project builds
+func (client *Client) EnvVars(username, project string) ([]*EnvVar, *APIResponse) {
+	envVars := []*EnvVar{}
+	path := fmt.Sprintf("/project/%s/%s/envvar", username, project)
+	apiResp := client.request(http.MethodGet, path, nil, nil, &envVars)
+	return envVars, apiResp
 }
