@@ -2,6 +2,7 @@ package circleci
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 )
 
@@ -87,7 +88,7 @@ type BuildTest struct {
 func (client *Client) GetBuild(username, project string, buildNum int) (*Build, *APIResponse) {
 	build := &Build{}
 	path := fmt.Sprintf("project/%s/%s/%d", username, project, buildNum)
-	apiResp := client.request("GET", path, nil, nil, build)
+	apiResp := client.request(http.MethodGet, path, nil, nil, build)
 	return build, apiResp
 }
 
@@ -95,7 +96,7 @@ func (client *Client) GetBuild(username, project string, buildNum int) (*Build, 
 func (client *Client) RetryBuild(username, project string, buildNum int) (*Build, *APIResponse) {
 	build := &Build{}
 	path := fmt.Sprintf("project/%s/%s/%d/retry", username, project, buildNum)
-	apiResp := client.request("GET", path, nil, nil, build)
+	apiResp := client.request(http.MethodGet, path, nil, nil, build)
 	return build, apiResp
 }
 
@@ -103,7 +104,7 @@ func (client *Client) RetryBuild(username, project string, buildNum int) (*Build
 func (client *Client) CancelBuild(username, project string, buildNum int) (*Build, *APIResponse) {
 	build := &Build{}
 	path := fmt.Sprintf("project/%s/%s/%d/cancel", username, project, buildNum)
-	apiResp := client.request("GET", path, nil, nil, build)
+	apiResp := client.request(http.MethodGet, path, nil, nil, build)
 	return build, apiResp
 }
 
@@ -112,7 +113,7 @@ func (client *Client) CancelBuild(username, project string, buildNum int) (*Buil
 func (client *Client) BuildArtifacts(username, project string, buildNum int) ([]*Artifact, *APIResponse) {
 	artifacts := []*Artifact{}
 	path := fmt.Sprintf("project/%s/%s/%d/artifacts", username, project, buildNum)
-	apiResp := client.request("GET", path, nil, nil, &artifacts)
+	apiResp := client.request(http.MethodGet, path, nil, nil, &artifacts)
 	return artifacts, apiResp
 }
 
@@ -121,6 +122,6 @@ func (client *Client) BuildArtifacts(username, project string, buildNum int) ([]
 func (client *Client) BuildTests(username, project string, buildNum int) ([]*BuildTest, *APIResponse) {
 	tests := []*BuildTest{}
 	path := fmt.Sprintf("project/%s/%s/%d/tests", username, project, buildNum)
-	apiResp := client.request("GET", path, nil, nil, &tests)
+	apiResp := client.request(http.MethodGet, path, nil, nil, &tests)
 	return tests, apiResp
 }

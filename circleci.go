@@ -122,7 +122,7 @@ func newClientRequest(method, urlString string, body interface{}) (*http.Request
 	}
 	httpReq.Header.Add("Accept", "application/json")
 	httpReq.Header.Add("Content-Type", "application/json")
-	if method != "GET" && body != nil {
+	if method != http.MethodGet && body != nil {
 		bodyBytes, marshalErr := json.Marshal(body)
 		if marshalErr != nil {
 			return httpReq, marshalErr
