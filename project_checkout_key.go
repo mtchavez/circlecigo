@@ -22,3 +22,12 @@ func (client *Client) CheckoutKeys(username, project string) ([]*CheckoutKey, *A
 	apiResp := client.request(http.MethodGet, path, nil, nil, &keys)
 	return keys, apiResp
 }
+
+// GetCheckoutKey calls the /project/:username/:project/checkout-key/:fingerprint endpoint
+// to get a specific checkout key for a project
+func (client *Client) GetCheckoutKey(username, project, fingerprint string) (*CheckoutKey, *APIResponse) {
+	key := &CheckoutKey{}
+	path := fmt.Sprintf("/project/%s/%s/checkout-key/%s", username, project, fingerprint)
+	apiResp := client.request(http.MethodGet, path, nil, nil, key)
+	return key, apiResp
+}
