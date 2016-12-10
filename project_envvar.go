@@ -28,6 +28,15 @@ func (client *Client) AddEnvVar(username, project, name, value string) (*EnvVar,
 	addVar := &EnvVar{Name: name, Value: value}
 	body, _ := json.Marshal(addVar)
 	path := fmt.Sprintf("/project/%s/%s/envvar", username, project)
-	apiResp := client.request(http.MethodPost, path, nil, body, &envVar)
+	apiResp := client.request(http.MethodPost, path, nil, body, envVar)
+	return envVar, apiResp
+}
+
+// GetEnvVar calls the /project/:username/:project/envvar endpoint
+// to set an ENV variable for the project builds
+func (client *Client) GetEnvVar(username, project, name string) (*EnvVar, *APIResponse) {
+	envVar := &EnvVar{}
+	path := fmt.Sprintf("/project/%s/%s/envvar/%s", username, project, name)
+	apiResp := client.request(http.MethodGet, path, nil, nil, envVar)
 	return envVar, apiResp
 }
