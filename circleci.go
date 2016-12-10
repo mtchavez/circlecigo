@@ -31,6 +31,11 @@ type APIResponse struct {
 	Error    error
 }
 
+// APIMessageResponse - Handles generic API responses from CircleCI
+type APIMessageResponse struct {
+	Message string `json:"message"`
+}
+
 // Success - Returns a boolean for determining if an APIResponse is successful
 // Will return false for any non 2xx status codes.
 func (resp *APIResponse) Success() bool {
