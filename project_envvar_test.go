@@ -93,3 +93,25 @@ func TestClient_GetEnvVar(t *testing.T) {
 		t.Errorf("Expected to get %s=%s but got %s=%s", testName, testValue, envVar.Name, envVar.Value)
 	}
 }
+
+func TestClient_DeleteEnvVar(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	testName := "FOO"
+	path := fmt.Sprintf("/project/%s/%s/envvar/%s", testUsername, testReponame, testName)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodDelete)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "ok"}`)
+	})
+	resp, apiResp := testClient.DeleteEnvVar(testUsername, testReponame, testName)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if resp.Message != "ok" {
+		t.Errorf("Expected to get OK message but got %s", resp.Message)
+	}
+}
