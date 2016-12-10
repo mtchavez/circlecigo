@@ -27,8 +27,10 @@ var (
 // APIResponse - Wraps an API request and gets returned from API interactions
 // to access the raw response and status of the request.
 type APIResponse struct {
-	Response *http.Response
-	Error    error
+	Response      *http.Response
+	Body          []byte
+	Error         error
+	ErrorResponse *APIMessageResponse
 }
 
 // APIMessageResponse - Handles generic API responses from CircleCI
@@ -111,6 +113,12 @@ func (client *Client) request(method, urlString string, params url.Values, body 
 	if bodyErr != nil {
 		apiResp.Error = bodyErr
 		return apiResp
+	}
+	apiResp.Body = bodyBytes
+	if httpResp.StatusCode == http.StatusNotFound {
+		message := &APIMessageResponse{}
+		json.Unmarshal(bodyBytes, message)
+		apiResp.ErrorResponse = message
 	}
 	unmarshalErr := json.Unmarshal(bodyBytes, response)
 	if unmarshalErr != nil {
