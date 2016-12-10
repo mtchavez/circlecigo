@@ -70,3 +70,26 @@ func TestClient_AddEnvVar(t *testing.T) {
 		t.Errorf("Expected to get %s=%s but got %s=%s", testName, testValue, envVar.Name, envVar.Value)
 	}
 }
+
+func TestClient_GetEnvVar(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	testName := "FOO"
+	testValue := "BAR"
+	path := fmt.Sprintf("/project/%s/%s/envvar/%s", testUsername, testReponame, testName)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"name": "FOO", "value": "BAR"}`)
+	})
+	envVar, apiResp := testClient.GetEnvVar(testUsername, testReponame, testName)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if envVar.Name != testName && envVar.Value != testValue {
+		t.Errorf("Expected to get %s=%s but got %s=%s", testName, testValue, envVar.Name, envVar.Value)
+	}
+}
