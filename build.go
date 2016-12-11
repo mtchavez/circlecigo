@@ -74,10 +74,16 @@ type Artifact struct {
 	URL        string `json:"url"`
 }
 
-// BuildTest is a test that was ran associated with a Build
+// BuildTests - CircleCI API tests metadata response
+type BuildTests struct {
+	Tests []*BuildTest `json:"tests"`
+}
+
+// BuildTest - CircleCI API tests metadata object
 type BuildTest struct {
 	Message   string  `json:"message"`
 	File      string  `json:"file"`
+	Source    string  `json:"source"`
 	RunTime   float64 `json:"run_time"`
 	Result    string  `json:"result"`
 	Name      string  `json:"name"`
@@ -119,9 +125,9 @@ func (client *Client) BuildArtifacts(username, project string, buildNum int) ([]
 
 // BuildTests calls the /project/:username/:reponame/:build_num/tests
 // endpoint to get all tests for a build
-func (client *Client) BuildTests(username, project string, buildNum int) ([]*BuildTest, *APIResponse) {
-	tests := []*BuildTest{}
+func (client *Client) BuildTests(username, project string, buildNum int) (*BuildTests, *APIResponse) {
+	tests := &BuildTests{}
 	path := fmt.Sprintf("project/%s/%s/%d/tests", username, project, buildNum)
-	apiResp := client.request(http.MethodGet, path, nil, nil, &tests)
+	apiResp := client.request(http.MethodGet, path, nil, nil, tests)
 	return tests, apiResp
 }

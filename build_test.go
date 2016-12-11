@@ -216,8 +216,31 @@ func TestClient_BuildTests_unauthorized(t *testing.T) {
 	if apiResp.Response.StatusCode != http.StatusUnauthorized {
 		t.Errorf("Expected unauthorized code but got %v", apiResp.Response.StatusCode)
 	}
-	if len(tests) != 0 {
+	if len(tests.Tests) != 0 {
 		t.Errorf("Expected no tests to exist")
+	}
+}
+
+func TestClient_BuildTestsTests_notFound(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/%d/tests", testUsername, testReponame, testBuildNum)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, `{"message": "Build not found"}`)
+	})
+	_, apiResp := testClient.BuildTests(testUsername, testReponame, testBuildNum)
+
+	if apiResp.Success() {
+		t.Errorf("Expected response not to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusNotFound {
+		t.Errorf("Expected status NotFound but got %v", apiResp.Response.StatusCode)
+	}
+	notFoundMessage := "Build not found"
+	if apiResp.ErrorResponse.Message != notFoundMessage {
+		t.Errorf("Expected not found message but got %s", apiResp.ErrorResponse.Message)
 	}
 }
 
@@ -228,30 +251,46 @@ func TestClient_BuildTests(t *testing.T) {
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		checkMethod(t, r, http.MethodGet)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, `[{
-			"message": "",
-			"file": "spec/unit/user_spec.rb",
-			"source": "rspec",
-			"run_time": 0.240912,
-			"result": "success",
-			"name": "user creation",
-			"classname": "spec.unit.user_spec"}]`)
+		fmt.Fprint(w, `{
+  "tests" : [ {
+    "message" : "",
+    "file" : "features/desktop/invitations.feature",
+    "source" : "cucumber",
+    "run_time" : 2.957513661,
+    "result" : "success",
+    "name" : "Accepting an invitation",
+    "classname" : "Invitations"
+  }, {
+    "message" : null,
+    "file" : "spec/lib/webfinger_spec.rb",
+    "source" : "rspec",
+    "run_time" : 0.011366,
+    "result" : "success",
+    "name" : "Webfinger#intialize sets account ",
+    "classname" : "spec.lib.webfinger_spec"
+  } ]
+}`)
 	})
 	tests, apiResp := testClient.BuildTests(testUsername, testReponame, testBuildNum)
+
 	if !apiResp.Success() {
 		t.Errorf("Expected response to be successful")
 	}
 	if apiResp.Response.StatusCode != http.StatusOK {
 		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
 	}
-	if len(tests) == 0 {
-		t.Errorf("Expected tests but didn't get any")
+	allTests := tests.Tests
+	if len(allTests) != 2 {
+		t.Errorf("Expected 2 tests but got %d", len(allTests))
 	}
-	test := tests[0]
-	if test.Name != "user creation" {
-		t.Errorf("Expected name to be %s but got %s", "user creation", test.Name)
+	firstTest := allTests[0]
+	if firstTest.File == "" {
+		t.Errorf("Expected test File to be returned")
 	}
-	if test.RunTime != 0.240912 {
-		t.Errorf("Expected RunTime to be %f but got %f", 0.240912, test.RunTime)
+	if firstTest.Source == "" {
+		t.Errorf("Expected test Source to be returned")
+	}
+	if firstTest.Result == "" {
+		t.Errorf("Expected test Result to be returned")
 	}
 }
