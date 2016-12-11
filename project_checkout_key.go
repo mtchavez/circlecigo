@@ -31,3 +31,12 @@ func (client *Client) GetCheckoutKey(username, project, fingerprint string) (*Ch
 	apiResp := client.request(http.MethodGet, path, nil, nil, key)
 	return key, apiResp
 }
+
+// DeleteCheckoutKey calls the /project/:username/:project/checkout-key/:fingerprint endpoint
+// to get a specific checkout key for a project
+func (client *Client) DeleteCheckoutKey(username, project, fingerprint string) (*APIMessageResponse, *APIResponse) {
+	resp := &APIMessageResponse{}
+	path := fmt.Sprintf("/project/%s/%s/checkout-key/%s", username, project, fingerprint)
+	apiResp := client.request(http.MethodDelete, path, nil, nil, resp)
+	return resp, apiResp
+}

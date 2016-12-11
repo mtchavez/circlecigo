@@ -81,3 +81,49 @@ func TestClient_GetCheckoutKey(t *testing.T) {
 		t.Errorf("Expected key type to be %s but got %s", testFingerprint, key.Fingerprint)
 	}
 }
+
+func TestClient_DeleteCheckoutKey_notFound(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/checkout-key/not-real", testUsername, testReponame)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodDelete)
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, `{"message": "checkout key not found"}`)
+	})
+	resp, apiResp := testClient.DeleteCheckoutKey(testUsername, testReponame, "not-real")
+	if apiResp.Success() {
+		t.Errorf("Expected response not to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusNotFound {
+		t.Errorf("Expected status not found but got %v", apiResp.Response.StatusCode)
+	}
+	if apiResp.ErrorResponse.Message != "checkout key not found" {
+		t.Errorf("Expected checkout key not found but got %v", apiResp.ErrorResponse.Message)
+	}
+	if resp.Message != "checkout key not found" {
+		t.Errorf("Expected to get a not found message but got %s", resp.Message)
+	}
+}
+
+func TestClient_DeleteCheckoutKey(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	testFingerprint := "c9:0b:1c:4f:d5:65:56:b9:ad:88:f9:81:2b:37:74:2f"
+	path := fmt.Sprintf("/project/%s/%s/checkout-key/%s", testUsername, testReponame, testFingerprint)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodDelete)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "ok"}`)
+	})
+	resp, apiResp := testClient.DeleteCheckoutKey(testUsername, testReponame, testFingerprint)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if resp.Message != "ok" {
+		t.Errorf("Expected ok message but got %s", resp.Message)
+	}
+}
