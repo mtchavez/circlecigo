@@ -53,7 +53,7 @@ func (client *Client) ClearCache(username, project string) (*ProjectClearCache, 
 }
 
 // ProjectRecentBuilds /project/:username/:project endpoint to get all the
-// recent builds for the found project.
+// recent builds for a project.
 // Takes url.Values to set limit of returned builds (no more than BuildLimitMax)
 // and filter to filter builds by status
 // and an offset of number of builds to page through
@@ -64,6 +64,23 @@ func (client *Client) ProjectRecentBuilds(username, project string, params url.V
 	}
 	client.verifyBuildsParams(&params)
 	path := fmt.Sprintf("/project/%s/%s", username, project)
+	apiResp := client.request(http.MethodGet, path, params, nil, &builds)
+	return builds, apiResp
+
+}
+
+// ProjectRecentBuildsBranch /project/:username/:project/tree/:branch endpoint to get all the
+// recent builds for a branch of a project.
+// Takes url.Values to set limit of returned builds (no more than BuildLimitMax)
+// and filter to filter builds by status
+// and an offset of number of builds to page through
+func (client *Client) ProjectRecentBuildsBranch(username, project, branch string, params url.Values) ([]*Build, *APIResponse) {
+	builds := []*Build{}
+	if params == nil {
+		params = url.Values{}
+	}
+	client.verifyBuildsParams(&params)
+	path := fmt.Sprintf("/project/%s/%s/tree/%s", username, project, url.QueryEscape(branch))
 	apiResp := client.request(http.MethodGet, path, params, nil, &builds)
 	return builds, apiResp
 
