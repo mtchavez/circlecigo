@@ -17,6 +17,92 @@ var (
 	ValidBuildFilters = []string{"completed", "successful", "failed", "running"}
 )
 
+// Project - CircleCI API response for a project
+type Project struct {
+	IRCServer            string                    `json:"irc_server"`
+	Scopes               []string                  `json:"scopes"`
+	IRCKeyword           string                    `json:"irc_keyword"`
+	Followed             bool                      `json:"followed"`
+	VCSType              string                    `json:"vcs-type"`
+	AWS                  *ProjectAWS               `json:"aws"`
+	SlackWebhookURL      string                    `json:"slack_webhook_url"`
+	FlowdockAPIToken     string                    `json:"flowdock_api_token"`
+	Parallel             int                       `json:"parallel"`
+	Username             string                    `json:"username"`
+	CampfireRoom         string                    `json:"campfire_room"`
+	Extra                string                    `json:"extra"`
+	Branches             map[string]*ProjectBranch `json:"branches"`
+	Jira                 string                    `json:"jira"`
+	SlackSubdomain       string                    `json:"slack_subdomain"`
+	Following            bool                      `json:"following"`
+	Setup                string                    `json:"setup"`
+	CampfireSubdomain    string                    `json:"campfire_subdomain"`
+	SlackNotifyPrefs     string                    `json:"slack_notify_prefs"`
+	IRCPassword          string                    `json:"irc_password"`
+	VcsURL               string                    `json:"vcs_url"`
+	DefaultBranch        string                    `json:"default_branch"`
+	HipchatAPIToken      string                    `json:"hipchat_api_token"`
+	IRCUsername          string                    `json:"irc_username"`
+	Language             string                    `json:"language"`
+	SlackChannelOverride string                    `json:"slack_channel_override"`
+	HipchatNotify        string                    `json:"hipchat_notify"`
+	SlackAPIToken        string                    `json:"slack_api_token"`
+	HasUsableKey         bool                      `json:"has_usable_key"`
+	IRCNotifyPrefs       string                    `json:"irc_notify_prefs"`
+	CampfireToken        string                    `json:"campfire_token"`
+	SlackChannel         string                    `json:"slack_channel"`
+	FeatureFlags         map[string]bool           `json:"feature_flags"`
+	CampfireNotifyPrefs  string                    `json:"campfire_notify_prefs"`
+	HipchatRoom          string                    `json:"hipchat_room"`
+	PostDependencies     string                    `json:"post_dependencies"`
+	HerokuDeployUser     string                    `json:"heroku_deploy_user"`
+	IRCChannel           string                    `json:"irc_channel"`
+	Oss                  bool                      `json:"oss"`
+	Reponame             string                    `json:"reponame"`
+	HipchatNotifyPrefs   string                    `json:"hipchat_notify_prefs"`
+	Compile              string                    `json:"compile"`
+	Dependencies         string                    `json:"dependencies"`
+	Test                 string                    `json:"test"`
+	SSHKeys              []*ProjectSSHKey          `json:"ssh_keys"`
+}
+
+// ProjectAWS - CircleCI project aws settings
+type ProjectAWS struct {
+	Keypair *ProjectAWSKeypair `json:"keypair"`
+}
+
+// ProjectAWSKeypair - CircleCI project aws keypair
+type ProjectAWSKeypair struct {
+	AccessKeyID     string `json:"access_key_id"`
+	SecretAccessKey string `json:"secret_access_key_id"`
+}
+
+// ProjectBranch - CircleCI API project branch
+type ProjectBranch struct {
+	LastNonSuccess *ProjectBuildDetails   `json:"last_non_success"`
+	LastSuccess    *ProjectBuildDetails   `json:"last_success"`
+	PusherLogins   []string               `json:"pusher_logins"`
+	RecentBuilds   []*ProjectBuildDetails `json:"recent_builds"`
+	RunningBuilds  []*ProjectBuildDetails `json:"running_builds"`
+}
+
+// ProjectBuildDetails - CircleCI API details for a build from a project view
+type ProjectBuildDetails struct {
+	Outcome     string `json:"outcome"`
+	Status      string `json:"status"`
+	BuildNum    int    `json:"build_num"`
+	VCSRevision string `json:"vcs_revision"`
+	PushedAt    string `json:"pushed_at"`
+	AddedAt     string `json:"added_at"`
+}
+
+// ProjectSSHKey - CircleCI API project ssh key
+type ProjectSSHKey struct {
+	Hostname    string `json:"hostname"`
+	PublicKey   string `json:"public_key"`
+	Fingerprint string `json:"fingerprint"`
+}
+
 // ProjectFollow - CircleCI API project follow response
 type ProjectFollow struct {
 	Followed   bool `json:"followed"`
@@ -84,6 +170,15 @@ func (client *Client) ProjectRecentBuildsBranch(username, project, branch string
 	apiResp := client.request(http.MethodGet, path, params, nil, &builds)
 	return builds, apiResp
 
+}
+
+// ProjectEnable calls /project/:username/:project/enable to enable a project
+// which will add an SSH key to VCS and will require privileges to do so
+func (client *Client) ProjectEnable(username, project string) (*Project, *APIResponse) {
+	enabledProject := &Project{}
+	path := fmt.Sprintf("/project/%s/%s/enable", username, project)
+	apiResp := client.request(http.MethodPost, path, nil, nil, enabledProject)
+	return enabledProject, apiResp
 }
 
 // verifyBuildsParams ensures limit param is not greater than the max
