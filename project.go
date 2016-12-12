@@ -181,6 +181,15 @@ func (client *Client) ProjectEnable(username, project string) (*Project, *APIRes
 	return enabledProject, apiResp
 }
 
+// ProjectSettings calls /project/:username/:project/settings to get the
+// settings for a project
+func (client *Client) ProjectSettings(username, project string) (*Project, *APIResponse) {
+	foundProject := &Project{}
+	path := fmt.Sprintf("/project/%s/%s/settings", username, project)
+	apiResp := client.request(http.MethodGet, path, nil, nil, foundProject)
+	return foundProject, apiResp
+}
+
 // verifyBuildsParams ensures limit param is not greater than the max
 // and that the filter is a valid option
 func (client *Client) verifyBuildsParams(params *url.Values) {
