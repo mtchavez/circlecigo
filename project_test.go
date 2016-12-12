@@ -3,6 +3,7 @@ package circleci
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"testing"
 )
 
@@ -124,5 +125,171 @@ func TestClient_ClearCache(t *testing.T) {
 	}
 	if clearCache.Status != "build cache deleted" {
 		t.Errorf("Expected status to be %s but got %s", "build cache deleted", clearCache.Status)
+	}
+}
+
+func TestClient_ProjectRecentBuilds(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s", testUsername, testReponame)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodGet)
+		checkQueryParam(t, r, "limit", "")
+		checkQueryParam(t, r, "filter", "")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `[{
+  "vcs_url" : "https://github.com/circleci/mongofinil",
+  "build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+  "build_num" : 22,
+  "branch" : "master",
+  "vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
+  "committer_name" : "Allen Rohner",
+  "committer_email" : "arohner@gmail.com",
+  "subject" : "Don't explode when the system clock shifts backwards",
+  "body" : "",
+  "why" : "github",
+  "dont_build" : null,
+  "queued_at" : "2013-02-12T21:33:30Z",
+  "start_time" : "2013-02-12T21:33:38Z",
+  "stop_time" : "2013-02-12T21:34:01Z",
+  "build_time_millis" : 23505,
+  "username" : "circleci",
+  "reponame" : "mongofinil",
+  "lifecycle" : "finished",
+  "outcome" : "failed",
+  "status" : "failed",
+  "retry_of" : null,
+  "previous" : {
+    "status" : "failed",
+    "build_num" : 21
+  }
+}]`)
+	})
+	builds, apiResp := testClient.ProjectRecentBuilds(testUsername, testReponame, nil)
+
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if len(builds) != 1 {
+		t.Errorf("Expected expected 1 build but got %v", len(builds))
+	}
+	build := builds[0]
+	if build.Status != "failed" {
+		t.Errorf("Expected status to be %s but got %s", "failed", build.Status)
+	}
+}
+
+func TestClient_ProjectRecentBuilds_exceedLimitParam(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	testParams := url.Values{}
+	testParams.Set("limit", "300")
+	path := fmt.Sprintf("/project/%s/%s", testUsername, testReponame)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodGet)
+		checkQueryParam(t, r, "limit", "100")
+		checkQueryParam(t, r, "filter", "")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `[{
+  "vcs_url" : "https://github.com/circleci/mongofinil",
+  "build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+  "build_num" : 22,
+  "branch" : "master",
+  "vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
+  "committer_name" : "Allen Rohner",
+  "committer_email" : "arohner@gmail.com",
+  "subject" : "Don't explode when the system clock shifts backwards",
+  "body" : "",
+  "why" : "github",
+  "dont_build" : null,
+  "queued_at" : "2013-02-12T21:33:30Z",
+  "start_time" : "2013-02-12T21:33:38Z",
+  "stop_time" : "2013-02-12T21:34:01Z",
+  "build_time_millis" : 23505,
+  "username" : "circleci",
+  "reponame" : "mongofinil",
+  "lifecycle" : "finished",
+  "outcome" : "failed",
+  "status" : "failed",
+  "retry_of" : null,
+  "previous" : {
+    "status" : "failed",
+    "build_num" : 21
+  }
+}]`)
+	})
+	builds, apiResp := testClient.ProjectRecentBuilds(testUsername, testReponame, testParams)
+
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if len(builds) != 1 {
+		t.Errorf("Expected expected 1 build but got %v", len(builds))
+	}
+	build := builds[0]
+	if build.Status != "failed" {
+		t.Errorf("Expected status to be %s but got %s", "failed", build.Status)
+	}
+}
+
+func TestClient_ProjectRecentBuilds_invalidFilterParam(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	testParams := url.Values{}
+	testParams.Set("filter", "no-existent-status")
+	path := fmt.Sprintf("/project/%s/%s", testUsername, testReponame)
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodGet)
+		checkQueryParam(t, r, "limit", "")
+		checkQueryParam(t, r, "filter", "")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `[{
+  "vcs_url" : "https://github.com/circleci/mongofinil",
+  "build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+  "build_num" : 22,
+  "branch" : "master",
+  "vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
+  "committer_name" : "Allen Rohner",
+  "committer_email" : "arohner@gmail.com",
+  "subject" : "Don't explode when the system clock shifts backwards",
+  "body" : "",
+  "why" : "github",
+  "dont_build" : null,
+  "queued_at" : "2013-02-12T21:33:30Z",
+  "start_time" : "2013-02-12T21:33:38Z",
+  "stop_time" : "2013-02-12T21:34:01Z",
+  "build_time_millis" : 23505,
+  "username" : "circleci",
+  "reponame" : "mongofinil",
+  "lifecycle" : "finished",
+  "outcome" : "failed",
+  "status" : "failed",
+  "retry_of" : null,
+  "previous" : {
+    "status" : "failed",
+    "build_num" : 21
+  }
+}]`)
+	})
+	builds, apiResp := testClient.ProjectRecentBuilds(testUsername, testReponame, testParams)
+
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if len(builds) != 1 {
+		t.Errorf("Expected expected 1 build but got %v", len(builds))
+	}
+	build := builds[0]
+	if build.Status != "failed" {
+		t.Errorf("Expected status to be %s but got %s", "failed", build.Status)
 	}
 }
