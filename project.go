@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -14,7 +15,12 @@ const (
 
 var (
 	// ValidBuildFilters is the list of valid build statuses you can filter by
-	ValidBuildFilters = []string{"completed", "successful", "failed", "running"}
+	ValidBuildFilters = map[string]string{
+		"completed":  "completed",
+		"successful": "successful",
+		"failed":     "failed",
+		"running":    "running",
+	}
 )
 
 // Project - CircleCI API response for a project
@@ -212,12 +218,6 @@ func (client *Client) verifyBuildsParams(params *url.Values) {
 
 // validBuildFilter verifies that a filter is in the ValidBuildFilters
 func validBuildFilter(filter string) bool {
-	valid := false
-	for _, validFilter := range ValidBuildFilters {
-		if validFilter == filter {
-			valid = true
-			break
-		}
-	}
+	_, valid := ValidBuildFilters[strings.ToLower(filter)]
 	return valid
 }
