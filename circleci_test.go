@@ -44,6 +44,14 @@ func checkMethod(t *testing.T, r *http.Request, expected string) {
 	}
 }
 
+func checkQueryParam(t *testing.T, r *http.Request, param, expected string) {
+	query := r.URL.Query()
+	actual := query.Get(param)
+	if actual != expected {
+		t.Errorf("Expected %v to be %s but got %v", param, expected, actual)
+	}
+}
+
 func TestNewClient(t *testing.T) {
 	client := NewClient(TestToken)
 	if client.Token != TestToken {
