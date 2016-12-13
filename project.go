@@ -127,8 +127,8 @@ func (client *Client) Projects() ([]*Project, *APIResponse) {
 	return projects, apiResp
 }
 
-// Follow calls the /project/:username/:project/follow endpoint to follow a project
-func (client *Client) Follow(username, project string) (*ProjectFollow, *APIResponse) {
+// ProjectFollow calls the /project/:username/:project/follow endpoint to follow a project
+func (client *Client) ProjectFollow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
 	path := fmt.Sprintf("/project/%s/%s/follow", username, project)
 	apiResp := client.request(http.MethodGet, path, nil, nil, follow)
