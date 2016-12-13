@@ -88,7 +88,7 @@ func TestClient_ProjectUnfollow(t *testing.T) {
 	}
 }
 
-func TestClient_ClearCache_unauthorized(t *testing.T) {
+func TestClient_ProjectClearCache_unauthorized(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/build-cache", testUsername, testReponame)
@@ -97,7 +97,7 @@ func TestClient_ClearCache_unauthorized(t *testing.T) {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
-	_, apiResp := testClient.ClearCache(testUsername, testReponame)
+	_, apiResp := testClient.ProjectClearCache(testUsername, testReponame)
 	if apiResp.Success() {
 		t.Errorf("Expected response to not be successful without token")
 	}
@@ -106,7 +106,7 @@ func TestClient_ClearCache_unauthorized(t *testing.T) {
 	}
 }
 
-func TestClient_ClearCache(t *testing.T) {
+func TestClient_ProjectClearCache(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/build-cache", testUsername, testReponame)
@@ -115,7 +115,7 @@ func TestClient_ClearCache(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status": "build cache deleted"}`)
 	})
-	clearCache, apiResp := testClient.ClearCache(testUsername, testReponame)
+	clearCache, apiResp := testClient.ProjectClearCache(testUsername, testReponame)
 
 	if !apiResp.Success() {
 		t.Errorf("Expected response to be successful")

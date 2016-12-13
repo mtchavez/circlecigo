@@ -143,8 +143,8 @@ func (client *Client) ProjectUnfollow(username, project string) (*ProjectFollow,
 	return follow, apiResp
 }
 
-// ClearCache calls the /project/:username/:project/unfollow endpoint to unfollow a project
-func (client *Client) ClearCache(username, project string) (*ProjectClearCache, *APIResponse) {
+// ProjectClearCache calls the /project/:username/:project/unfollow endpoint to unfollow a project
+func (client *Client) ProjectClearCache(username, project string) (*ProjectClearCache, *APIResponse) {
 	clearCache := &ProjectClearCache{}
 	path := fmt.Sprintf("/project/%s/%s/build-cache", username, project)
 	apiResp := client.request(http.MethodDelete, path, nil, nil, clearCache)
