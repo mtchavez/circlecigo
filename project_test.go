@@ -345,3 +345,44 @@ func TestClient_ProjectSettings(t *testing.T) {
 		t.Errorf("Expected AWS.Keypair to be nil but got %+v", project.AWS.Keypair)
 	}
 }
+
+func TestClient_Projects(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	testMux.HandleFunc("/projects", func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, fmt.Sprintf("[%s]", testProjectResponse))
+	})
+	projects, apiResp := testClient.Projects()
+
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if len(projects) != 1 {
+		t.Errorf("Expected 1 project but got %v", len(projects))
+	}
+	project := projects[0]
+	if project.Language != "Ruby" {
+		t.Errorf("Expected Language to be %s but got %s", "Ruby", project.Language)
+	}
+	if project.Reponame != "circleci" {
+		t.Errorf("Expected Reponame to be %s but got %s", "circleci", project.Reponame)
+	}
+	sshKeys := project.SSHKeys
+	if len(sshKeys) != 4 {
+		t.Errorf("Expected SSH keys to be %d but got %d", 4, len(sshKeys))
+	}
+	if !project.FeatureFlags["oss"] {
+		t.Errorf("Expected FeatureFlags to be oss but got false")
+	}
+	if _, found := project.Branches["master"]; !found {
+		t.Errorf("Expected Branches to have master branch")
+	}
+	if project.AWS.Keypair != nil {
+		t.Errorf("Expected AWS.Keypair to be nil but got %+v", project.AWS.Keypair)
+	}
+}

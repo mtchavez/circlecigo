@@ -120,6 +120,13 @@ type ProjectClearCache struct {
 	Status string `json:"status"`
 }
 
+// Projects calls /projects to get all the projects you follow
+func (client *Client) Projects() ([]*Project, *APIResponse) {
+	projects := []*Project{}
+	apiResp := client.request(http.MethodGet, "/projects", nil, nil, &projects)
+	return projects, apiResp
+}
+
 // Follow calls the /project/:username/:project/follow endpoint to follow a project
 func (client *Client) Follow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
