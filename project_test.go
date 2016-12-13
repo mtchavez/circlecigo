@@ -49,7 +49,7 @@ func TestClient_ProjectFollow(t *testing.T) {
 	}
 }
 
-func TestClient_Unfollow_unauthorized(t *testing.T) {
+func TestClient_ProjectUnfollow_unauthorized(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/unfollow", testUsername, testReponame)
@@ -58,7 +58,7 @@ func TestClient_Unfollow_unauthorized(t *testing.T) {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
-	_, apiResp := testClient.Unfollow(testUsername, testReponame)
+	_, apiResp := testClient.ProjectUnfollow(testUsername, testReponame)
 	if apiResp.Success() {
 		t.Errorf("Expected response to not be successful without token")
 	}
@@ -67,7 +67,7 @@ func TestClient_Unfollow_unauthorized(t *testing.T) {
 	}
 }
 
-func TestClient_Unfollow(t *testing.T) {
+func TestClient_ProjectUnfollow(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/unfollow", testUsername, testReponame)
@@ -76,7 +76,7 @@ func TestClient_Unfollow(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"followed": false}`)
 	})
-	follow, apiResp := testClient.Unfollow(testUsername, testReponame)
+	follow, apiResp := testClient.ProjectUnfollow(testUsername, testReponame)
 	if !apiResp.Success() {
 		t.Errorf("Expected response to be successful")
 	}
