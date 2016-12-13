@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestClient_Follow_unauthorized(t *testing.T) {
+func TestClient_ProjectFollow_unauthorized(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/follow", testUsername, testReponame)
@@ -16,7 +16,7 @@ func TestClient_Follow_unauthorized(t *testing.T) {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
-	follow, apiResp := testClient.Follow(testUsername, testReponame)
+	follow, apiResp := testClient.ProjectFollow(testUsername, testReponame)
 	if apiResp.Success() {
 		t.Errorf("Expected response to not be successful without token")
 	}
@@ -28,7 +28,7 @@ func TestClient_Follow_unauthorized(t *testing.T) {
 	}
 }
 
-func TestClient_Follow(t *testing.T) {
+func TestClient_ProjectFollow(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/follow", testUsername, testReponame)
@@ -37,7 +37,7 @@ func TestClient_Follow(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"followed": true, "first_build": 1234}`)
 	})
-	follow, apiResp := testClient.Follow(testUsername, testReponame)
+	follow, apiResp := testClient.ProjectFollow(testUsername, testReponame)
 	if !apiResp.Success() {
 		t.Errorf("Expected response to be successful")
 	}
