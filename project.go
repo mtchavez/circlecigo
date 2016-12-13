@@ -135,8 +135,8 @@ func (client *Client) ProjectFollow(username, project string) (*ProjectFollow, *
 	return follow, apiResp
 }
 
-// Unfollow calls the /project/:username/:project/unfollow endpoint to unfollow a project
-func (client *Client) Unfollow(username, project string) (*ProjectFollow, *APIResponse) {
+// ProjectUnfollow calls the /project/:username/:project/unfollow endpoint to unfollow a project
+func (client *Client) ProjectUnfollow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
 	path := fmt.Sprintf("/project/%s/%s/unfollow", username, project)
 	apiResp := client.request(http.MethodGet, path, nil, nil, follow)
