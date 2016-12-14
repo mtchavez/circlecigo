@@ -90,6 +90,24 @@ type BuildTest struct {
 	Classname string  `json:"classname"`
 }
 
+// BuildPostBody - The optional options to pass with a POST body when
+// triggering a build
+type BuildPostBody struct {
+	Revision        string            `json:"revision"`
+	Tag             string            `json:"tag"`
+	Parallel        int               `json:"parallel"`
+	BuildParameters map[string]string `json:"build_parameters"`
+}
+
+// NewBuild calls /project/:username/:reponame endpaoint to trigger a new
+// build for the project
+func (client *Client) NewBuild(username, project string, body *BuildPostBody) (*Build, *APIResponse) {
+	build := &Build{}
+	path := fmt.Sprintf("project/%s/%s", username, project)
+	apiResp := client.request(http.MethodPost, path, nil, body, build)
+	return build, apiResp
+}
+
 // GetBuild calls the /project/:username/:reponame/:build_num endpoint to return a build
 func (client *Client) GetBuild(username, project string, buildNum int) (*Build, *APIResponse) {
 	build := &Build{}
