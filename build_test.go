@@ -56,6 +56,56 @@ func TestClient_NewBuild(t *testing.T) {
 	}
 }
 
+func TestClient_BuildBranch_buildBody(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/tree/%s", testUsername, testReponame, "master")
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodPost)
+		checkBodyContains(t, r, `{"revision":"","tag":"v1.1.2","parallel":4,"build_parameters":{"INTEGRATION_TESTS":"true"}}`)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, testTriggerBuild)
+	})
+	buildBody := &BuildPostBody{
+		Tag:      "v1.1.2",
+		Parallel: 4,
+		BuildParameters: map[string]string{
+			"INTEGRATION_TESTS": "true",
+		},
+	}
+	build, apiResp := testClient.BuildBranch(testUsername, testReponame, "master", buildBody)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if build.Status != "not_running" {
+		t.Errorf("Expected build Status to be %s but got %s", "not_running", build.Status)
+	}
+}
+
+func TestClient_BuildBranch(t *testing.T) {
+	startTestServer()
+	defer stopTestServer()
+	path := fmt.Sprintf("/project/%s/%s/tree/%s", testUsername, testReponame, "master")
+	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		checkMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, testTriggerBuild)
+	})
+	build, apiResp := testClient.BuildBranch(testUsername, testReponame, "master", nil)
+	if !apiResp.Success() {
+		t.Errorf("Expected response to be successful")
+	}
+	if apiResp.Response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK but got %v", apiResp.Response.StatusCode)
+	}
+	if build.Status != "not_running" {
+		t.Errorf("Expected build Status to be %s but got %s", "not_running", build.Status)
+	}
+}
+
 func TestClient_GetBuild_unauthorized(t *testing.T) {
 	startTestServer()
 	defer stopTestServer()
