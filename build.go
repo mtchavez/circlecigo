@@ -3,6 +3,7 @@ package circleci
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -104,6 +105,15 @@ type BuildPostBody struct {
 func (client *Client) NewBuild(username, project string, body *BuildPostBody) (*Build, *APIResponse) {
 	build := &Build{}
 	path := fmt.Sprintf("project/%s/%s", username, project)
+	apiResp := client.request(http.MethodPost, path, nil, body, build)
+	return build, apiResp
+}
+
+// BuildBranch calls /project/:username/:reponame/tree/:branch endpaoint to trigger a new
+// build for the project
+func (client *Client) BuildBranch(username, project, branch string, body *BuildPostBody) (*Build, *APIResponse) {
+	build := &Build{}
+	path := fmt.Sprintf("/project/%s/%s/tree/%s", username, project, url.QueryEscape(branch))
 	apiResp := client.request(http.MethodPost, path, nil, body, build)
 	return build, apiResp
 }
