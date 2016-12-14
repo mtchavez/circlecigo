@@ -3,11 +3,13 @@ package circleci
 var (
 	testProjectResponse     string
 	testProjectRecentBuilds string
+	testTriggerBuild        string
 )
 
 func init() {
 	setupTestProjects()
 	setupTestProjectRecentBuilds()
+	setupTestTriggerBuild()
 }
 
 func setupTestProjects() {
@@ -168,4 +170,78 @@ func setupTestProjectRecentBuilds() {
     "build_num" : 21
   }
 }]`
+}
+
+func setupTestTriggerBuild() {
+	testTriggerBuild = `
+{
+  "author_name": "Allen Rohner",
+  "build_url": "https://circleci.com/gh/circleci/mongofinil/54",
+  "reponame": "mongofinil",
+  "failed": null,
+  "infrastructure_fail": false,
+  "canceled": false,
+  "all_commit_details": [{
+      "author_name": "Allen Rohner",
+      "commit": "f1baeb913288519dd9a942499cef2873f5b1c2bf",
+      "author_login": "arohner",
+      "committer_login": "arohner",
+      "committer_name": "Allen Rohner",
+      "body": "Minor version bump",
+      "author_date": "2014-04-17T08:41:40Z",
+      "committer_date": "2014-04-17T08:41:40Z",
+      "commit_url": "https://github.com/circleci/mongofinil/commit/f1baeb913288519dd9a942499cef2873f5b1c2bf",
+      "committer_email": "arohner@gmail.com",
+      "author_email": "arohner@gmail.com",
+      "subject": "Merge pull request #15 from circleci/minor-version-bump"
+    }],
+  "previous": {
+    "build_num": 53,
+    "status": "success",
+    "build_time_millis": 55413
+  },
+  "ssh_enabled": null,
+  "author_email": "arohner@gmail.com",
+  "why": "edit",
+  "build_time_millis": null,
+  "committer_email": "arohner@gmail.com",
+  "parallel": 2,
+  "retries": null,
+  "compare": null,
+  "dont_build": null,
+  "committer_name": "Allen Rohner",
+  "usage_queued_at": "2014-04-29T12:56:55.338Z",
+  "branch": "master",
+  "body": "Minor version bump",
+  "author_date": "2014-04-17T08:41:40Z",
+  "node": null,
+  "committer_date": "2014-04-17T08:41:40Z",
+  "start_time": null,
+  "stop_time": null,
+  "lifecycle": "not_running",
+  "user": {
+    "email": "arohner@gmail.com",
+    "name": "Allen Rohner",
+    "login": "arohner",
+    "is_user": true
+  },
+  "subject": "Merge pull request #15 from circleci/minor-version-bump",
+  "messages": [],
+  "job_name": null,
+  "retry_of": null,
+  "previous_successful_build": {
+    "build_num": 53,
+    "status": "success",
+    "build_time_millis": 55413
+  },
+  "outcome": null,
+  "status": "not_running",
+  "vcs_revision": "f1baeb913288519dd9a942499cef2873f5b1c2bf",
+  "vcs_tag": "v0.1",
+  "build_num": 54,
+  "username": "circleci",
+  "vcs_url": "https://github.com/circleci/mongofinil",
+  "timedout": false
+}
+`
 }
