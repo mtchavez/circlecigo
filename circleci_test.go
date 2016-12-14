@@ -2,9 +2,11 @@ package circleci
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -41,6 +43,16 @@ func stopTestServer() {
 func checkMethod(t *testing.T, r *http.Request, expected string) {
 	if r.Method != expected {
 		t.Errorf("Expected %v method but got %v", expected, r.Method)
+	}
+}
+
+func checkBodyContains(t *testing.T, r *http.Request, expected string) {
+	body, readErr := ioutil.ReadAll(r.Body)
+	if readErr != nil {
+		t.Errorf("Got error reading body %v", readErr)
+	}
+	if !strings.Contains(string(body), expected) {
+		t.Errorf("Expected %v to match %v", string(body), expected)
 	}
 }
 
