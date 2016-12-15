@@ -16,7 +16,7 @@ type EnvVar struct {
 // all ENV variables set for the project builds
 func (client *Client) EnvVars(username, project string) ([]*EnvVar, *APIResponse) {
 	envVars := []*EnvVar{}
-	path := fmt.Sprintf("/project/%s/%s/envvar", username, project)
+	path := fmt.Sprintf("project/%s/%s/envvar", username, project)
 	apiResp := client.request(http.MethodGet, path, nil, nil, &envVars)
 	return envVars, apiResp
 }
@@ -27,7 +27,7 @@ func (client *Client) AddEnvVar(username, project, name, value string) (*EnvVar,
 	envVar := &EnvVar{}
 	addVar := &EnvVar{Name: name, Value: value}
 	body, _ := json.Marshal(addVar)
-	path := fmt.Sprintf("/project/%s/%s/envvar", username, project)
+	path := fmt.Sprintf("project/%s/%s/envvar", username, project)
 	apiResp := client.request(http.MethodPost, path, nil, body, envVar)
 	return envVar, apiResp
 }
@@ -36,7 +36,7 @@ func (client *Client) AddEnvVar(username, project, name, value string) (*EnvVar,
 // to get an ENV variable for the project builds
 func (client *Client) GetEnvVar(username, project, name string) (*EnvVar, *APIResponse) {
 	envVar := &EnvVar{}
-	path := fmt.Sprintf("/project/%s/%s/envvar/%s", username, project, name)
+	path := fmt.Sprintf("project/%s/%s/envvar/%s", username, project, name)
 	apiResp := client.request(http.MethodGet, path, nil, nil, envVar)
 	return envVar, apiResp
 }
@@ -46,7 +46,7 @@ func (client *Client) GetEnvVar(username, project, name string) (*EnvVar, *APIRe
 // instead of an EnvVar
 func (client *Client) DeleteEnvVar(username, project, name string) (*APIMessageResponse, *APIResponse) {
 	resp := &APIMessageResponse{}
-	path := fmt.Sprintf("/project/%s/%s/envvar/%s", username, project, name)
+	path := fmt.Sprintf("project/%s/%s/envvar/%s", username, project, name)
 	apiResp := client.request(http.MethodDelete, path, nil, nil, resp)
 	return resp, apiResp
 }

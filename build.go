@@ -113,7 +113,7 @@ func (client *Client) NewBuild(username, project string, body *BuildPostBody) (*
 // build for the project
 func (client *Client) BuildBranch(username, project, branch string, body *BuildPostBody) (*Build, *APIResponse) {
 	build := &Build{}
-	path := fmt.Sprintf("/project/%s/%s/tree/%s", username, project, url.QueryEscape(branch))
+	path := fmt.Sprintf("project/%s/%s/tree/%s", username, project, url.QueryEscape(branch))
 	apiResp := client.request(http.MethodPost, path, nil, body, build)
 	return build, apiResp
 }

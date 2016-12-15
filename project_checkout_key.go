@@ -18,7 +18,7 @@ type CheckoutKey struct {
 // to get a list of all the checkout keys for a project
 func (client *Client) CheckoutKeys(username, project string) ([]*CheckoutKey, *APIResponse) {
 	keys := []*CheckoutKey{}
-	path := fmt.Sprintf("/project/%s/%s/checkout-key", username, project)
+	path := fmt.Sprintf("project/%s/%s/checkout-key", username, project)
 	apiResp := client.request(http.MethodGet, path, nil, nil, &keys)
 	return keys, apiResp
 }
@@ -27,7 +27,7 @@ func (client *Client) CheckoutKeys(username, project string) ([]*CheckoutKey, *A
 // to get a specific checkout key for a project
 func (client *Client) GetCheckoutKey(username, project, fingerprint string) (*CheckoutKey, *APIResponse) {
 	key := &CheckoutKey{}
-	path := fmt.Sprintf("/project/%s/%s/checkout-key/%s", username, project, fingerprint)
+	path := fmt.Sprintf("project/%s/%s/checkout-key/%s", username, project, fingerprint)
 	apiResp := client.request(http.MethodGet, path, nil, nil, key)
 	return key, apiResp
 }
@@ -36,7 +36,7 @@ func (client *Client) GetCheckoutKey(username, project, fingerprint string) (*Ch
 // to get a specific checkout key for a project
 func (client *Client) DeleteCheckoutKey(username, project, fingerprint string) (*APIMessageResponse, *APIResponse) {
 	resp := &APIMessageResponse{}
-	path := fmt.Sprintf("/project/%s/%s/checkout-key/%s", username, project, fingerprint)
+	path := fmt.Sprintf("project/%s/%s/checkout-key/%s", username, project, fingerprint)
 	apiResp := client.request(http.MethodDelete, path, nil, nil, resp)
 	return resp, apiResp
 }

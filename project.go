@@ -123,14 +123,14 @@ type ProjectClearCache struct {
 // Projects calls /projects to get all the projects you follow
 func (client *Client) Projects() ([]*Project, *APIResponse) {
 	projects := []*Project{}
-	apiResp := client.request(http.MethodGet, "/projects", nil, nil, &projects)
+	apiResp := client.request(http.MethodGet, "projects", nil, nil, &projects)
 	return projects, apiResp
 }
 
 // ProjectFollow calls the /project/:username/:project/follow endpoint to follow a project
 func (client *Client) ProjectFollow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
-	path := fmt.Sprintf("/project/%s/%s/follow", username, project)
+	path := fmt.Sprintf("project/%s/%s/follow", username, project)
 	apiResp := client.request(http.MethodGet, path, nil, nil, follow)
 	return follow, apiResp
 }
@@ -138,7 +138,7 @@ func (client *Client) ProjectFollow(username, project string) (*ProjectFollow, *
 // ProjectUnfollow calls the /project/:username/:project/unfollow endpoint to unfollow a project
 func (client *Client) ProjectUnfollow(username, project string) (*ProjectFollow, *APIResponse) {
 	follow := &ProjectFollow{}
-	path := fmt.Sprintf("/project/%s/%s/unfollow", username, project)
+	path := fmt.Sprintf("project/%s/%s/unfollow", username, project)
 	apiResp := client.request(http.MethodGet, path, nil, nil, follow)
 	return follow, apiResp
 }
@@ -146,7 +146,7 @@ func (client *Client) ProjectUnfollow(username, project string) (*ProjectFollow,
 // ProjectClearCache calls the /project/:username/:project/unfollow endpoint to unfollow a project
 func (client *Client) ProjectClearCache(username, project string) (*ProjectClearCache, *APIResponse) {
 	clearCache := &ProjectClearCache{}
-	path := fmt.Sprintf("/project/%s/%s/build-cache", username, project)
+	path := fmt.Sprintf("project/%s/%s/build-cache", username, project)
 	apiResp := client.request(http.MethodDelete, path, nil, nil, clearCache)
 	return clearCache, apiResp
 }
@@ -162,7 +162,7 @@ func (client *Client) ProjectRecentBuilds(username, project string, params url.V
 		params = url.Values{}
 	}
 	client.verifyBuildsParams(&params)
-	path := fmt.Sprintf("/project/%s/%s", username, project)
+	path := fmt.Sprintf("project/%s/%s", username, project)
 	apiResp := client.request(http.MethodGet, path, params, nil, &builds)
 	return builds, apiResp
 
@@ -179,7 +179,7 @@ func (client *Client) ProjectRecentBuildsBranch(username, project, branch string
 		params = url.Values{}
 	}
 	client.verifyBuildsParams(&params)
-	path := fmt.Sprintf("/project/%s/%s/tree/%s", username, project, url.QueryEscape(branch))
+	path := fmt.Sprintf("project/%s/%s/tree/%s", username, project, url.QueryEscape(branch))
 	apiResp := client.request(http.MethodGet, path, params, nil, &builds)
 	return builds, apiResp
 
@@ -189,7 +189,7 @@ func (client *Client) ProjectRecentBuildsBranch(username, project, branch string
 // which will add an SSH key to VCS and will require privileges to do so
 func (client *Client) ProjectEnable(username, project string) (*Project, *APIResponse) {
 	enabledProject := &Project{}
-	path := fmt.Sprintf("/project/%s/%s/enable", username, project)
+	path := fmt.Sprintf("project/%s/%s/enable", username, project)
 	apiResp := client.request(http.MethodPost, path, nil, nil, enabledProject)
 	return enabledProject, apiResp
 }
@@ -198,7 +198,7 @@ func (client *Client) ProjectEnable(username, project string) (*Project, *APIRes
 // settings for a project
 func (client *Client) ProjectSettings(username, project string) (*Project, *APIResponse) {
 	foundProject := &Project{}
-	path := fmt.Sprintf("/project/%s/%s/settings", username, project)
+	path := fmt.Sprintf("project/%s/%s/settings", username, project)
 	apiResp := client.request(http.MethodGet, path, nil, nil, foundProject)
 	return foundProject, apiResp
 }
