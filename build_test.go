@@ -214,7 +214,7 @@ func TestClient_CancelBuild_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/cancel", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, http.MethodGet)
+		checkMethod(t, r, http.MethodPost)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -235,7 +235,7 @@ func TestClient_CancelBuild(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/cancel", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, http.MethodGet)
+		checkMethod(t, r, http.MethodPost)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status": "cancelled", "build_num": 1234}`)
 	})
