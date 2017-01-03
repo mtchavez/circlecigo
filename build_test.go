@@ -169,7 +169,7 @@ func TestClient_RetryBuild_unauthorized(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/retry", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, http.MethodGet)
+		checkMethod(t, r, http.MethodPost)
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, `{"message": "You must log in first"}`)
 	})
@@ -190,7 +190,7 @@ func TestClient_RetryBuild(t *testing.T) {
 	defer stopTestServer()
 	path := fmt.Sprintf("/project/%s/%s/%d/retry", testUsername, testReponame, testBuildNum)
 	testMux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		checkMethod(t, r, http.MethodGet)
+		checkMethod(t, r, http.MethodPost)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status": "running", "build_num": 1234}`)
 	})
