@@ -398,7 +398,7 @@ func TestClient_BuildTests(t *testing.T) {
 }
 
 func TestBuild_RunTime_buildTimeMillisEmptyWithStartTime(t *testing.T) {
-	startTime := time.Now().Add(time.Minute * time.Duration(10))
+	startTime := time.Now().Add(time.Minute * -1 * time.Duration(10))
 	build := &Build{
 		BuildTimeMillis: 0,
 		Status:          "running",
@@ -406,7 +406,7 @@ func TestBuild_RunTime_buildTimeMillisEmptyWithStartTime(t *testing.T) {
 	}
 	runTime := build.RunTime()
 	runTimeString := fmt.Sprintf("%+v", runTime)
-	matchTime := "9m59.*s"
+	matchTime := "10m.*s"
 	if matched, e := regexp.MatchString(matchTime, runTimeString); e != nil || !matched {
 		t.Errorf("Expected to match %v but got %v", matchTime, runTimeString)
 	}
