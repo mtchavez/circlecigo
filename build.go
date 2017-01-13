@@ -173,7 +173,7 @@ func (build *Build) RunTime() time.Duration {
 	if parseErr != nil {
 		return time.Duration(0) * time.Second
 	}
-	return time.Since(parsedStartTime) * -1
+	return time.Since(parsedStartTime)
 }
 
 func (build *Build) finishedRunning() bool {
