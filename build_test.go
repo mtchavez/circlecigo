@@ -3,7 +3,9 @@ package circleci
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"testing"
+	"time"
 )
 
 func TestClient_NewBuild_buildBody(t *testing.T) {
@@ -392,5 +394,48 @@ func TestClient_BuildTests(t *testing.T) {
 	}
 	if firstTest.Result == "" {
 		t.Errorf("Expected test Result to be returned")
+	}
+}
+
+func TestBuild_RunTime_buildTimeMillisEmptyWithStartTime(t *testing.T) {
+	startTime := time.Now().Add(time.Minute * time.Duration(10))
+	build := &Build{
+		BuildTimeMillis: 0,
+		Status:          "running",
+		StartTime:       startTime.Format(time.RFC3339),
+	}
+	runTime := build.RunTime()
+	runTimeString := fmt.Sprintf("%+v", runTime)
+	matchTime := "9m59.*s"
+	if matched, e := regexp.MatchString(matchTime, runTimeString); e != nil || !matched {
+		t.Errorf("Expected to match %v but got %v", matchTime, runTimeString)
+	}
+}
+
+func TestBuild_RunTime_finishedRunning(t *testing.T) {
+	build := &Build{
+		BuildTimeMillis: 1000 * 60 * 60,
+		Status:          "failed",
+		StopTime:        time.Now().Format(time.RFC3339),
+	}
+	runTime := build.RunTime()
+	runTimeString := fmt.Sprintf("%+v", runTime)
+	matchTime := "1h0m0s"
+	if matched, e := regexp.MatchString(matchTime, runTimeString); e != nil || !matched {
+		t.Errorf("Expected to match %v but got %v", matchTime, runTimeString)
+	}
+}
+
+func TestBuild_RunTime_runningWithBadStartTime(t *testing.T) {
+	build := &Build{
+		BuildTimeMillis: 0,
+		Status:          "running",
+		StartTime:       "1/1/3030 19:56:42",
+	}
+	runTime := build.RunTime()
+	runTimeString := fmt.Sprintf("%+v", runTime)
+	matchTime := "0s"
+	if matched, e := regexp.MatchString(matchTime, runTimeString); e != nil || !matched {
+		t.Errorf("Expected to match %v but got %v", matchTime, runTimeString)
 	}
 }
