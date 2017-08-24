@@ -1,3 +1,3 @@
-# Unreleased
+# 0.1.0 (2017-01-13)
 
-- Client package added
+- Implments REST API endpoints
