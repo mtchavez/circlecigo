@@ -1,22 +1,27 @@
+ROOT := $(CURDIR)
 GOPKGS = \
 		golang.org/x/tools/cmd/cover \
 		github.com/golang/lint/golint \
-		github.com/tools/godep
-default: test
+		github.com/golang/dep/cmd/dep
 
-ci: deps test
+default: test
 
 deps:
 	@go get -u -v $(GOPKGS)
-	@if [ `which godep` ] && [ -f ./Godeps/Godeps.json ]; then godep restore; fi
+	@dep ensure
 
-build: pre_test
-	@./script/build
+lint:
+	@echo "[Lint] running golint"
+	@golint
 
-pre_test:
-	@./script/pre_test
+vet:
+	@echo "[Vet] running go vet"
+	@go vet
 
-test: pre_test
-	@./script/test
+ci: deps vet lint test
 
-PHONY: ci deps build pre_test test
+test:
+	@echo "[Test] running tests"
+	@if [ "$(CI)" ]; then goveralls -service=travis-ci; else go test -v -cover; fi
+
+.PHONY: default golint test vet deps
