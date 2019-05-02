@@ -1,11 +1,10 @@
 language: go
 go:
-  - 1.7
-  - 1.8
-  - tip
+  - "1.12"
 sudo: false
 before_install:
   - go get github.com/mattn/goveralls
 script:
   - export PATH=$PATH:$HOME/gopath/bin
+  - export GO111MODULE=on
   - make ci
