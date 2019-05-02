@@ -5,21 +5,18 @@ GOPKGS = \
 
 default: test
 
+ci: deps test
+
 deps:
 	@go get -v $(GOPKGS)
 
-lint:
-	@echo "[Lint] running golint"
-	@golint
+build: pre_test
+	@./script/build
 
-vet:
-	@echo "[Vet] running go vet"
-	@go vet
+pre_test:
+	@./script/pre_test
 
-ci: deps vet lint test
+test: pre_test
+	@./script/test
 
-test:
-	@echo "[Test] running tests"
-	@if [ "$(CI)" ]; then goveralls -service=travis-ci; else go test -v -cover; fi
-
-.PHONY: default golint test vet deps
+PHONY: ci deps build pre_test test
