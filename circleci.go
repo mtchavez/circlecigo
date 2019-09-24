@@ -55,6 +55,7 @@ func (resp *APIResponse) Success() bool {
 // Client is for configuring settings to interact with the
 // Client API to make requests
 type Client struct {
+	CircleIface
 	BaseURL    *url.URL
 	Logger     *log.Logger
 	Token      string
