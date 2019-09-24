@@ -1,14 +1,28 @@
 ROOT := $(CURDIR)
-GOPKGS = \
-		golang.org/x/tools/cmd/cover \
-		github.com/golang/lint/golint \
+PACKAGES := `go list ./... | grep -v /node_modules/`
 
-default: test
-
-ci: deps test
+default: ci
 
 deps:
-	@go get -v $(GOPKGS)
+	@echo "[Deps] getting dependencies"
+	GO111MODULE=on go get -u golang.org/x/lint/golint
+	GO111MODULE=on go get -u -v ./...
+
+lint:
+	@echo "[Lint] running golint"
+	@go fmt ${PACKAGES}
+	@golint -set_exit_status ${PACKAGES} || exit 1
+
+lint:
+	@echo "[Lint] running golint"
+	@go fmt ${PACKAGES}
+	@golint -set_exit_status ${PACKAGES} || exit 1
+
+vet:
+	@echo "[Vet] running go vet"
+	go vet ${PACKAGES} || exit 1
+
+ci: deps vet lint test
 
 build: pre_test
 	@./script/build
